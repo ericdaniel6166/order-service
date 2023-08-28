@@ -3,7 +3,7 @@ package com.example.orderservice.service;
 import com.example.orderservice.dto.OrderLineItemsDto;
 import com.example.orderservice.dto.OrderRequest;
 import com.example.orderservice.model.Order;
-import com.example.orderservice.model.OrderLineItems;
+import com.example.orderservice.model.OrderLineItem;
 import com.example.orderservice.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,23 +25,23 @@ public class OrderService {
         Order order = new Order();
         order.setOrderNumber(UUID.randomUUID().toString());
 
-        List<OrderLineItems> orderLineItems = orderRequest.getOrderLineItemsDtoList()
+        List<OrderLineItem> orderLineItems = orderRequest.getOrderLineItemsDtoList()
                 .stream()
                 .map(this::mapToDto)
                 .toList();
 
-        order.setOrderLineItemsList(orderLineItems);
+        order.setOrderLineItemList(orderLineItems);
 
         orderRepository.save(order);
         return "Order Placed";
     }
 
-    private OrderLineItems mapToDto(OrderLineItemsDto orderLineItemsDto) {
-        OrderLineItems orderLineItems = new OrderLineItems();
-        orderLineItems.setPrice(orderLineItemsDto.getPrice());
-        orderLineItems.setQuantity(orderLineItemsDto.getQuantity());
-        orderLineItems.setSkuCode(orderLineItemsDto.getSkuCode());
-        return orderLineItems;
+    private OrderLineItem mapToDto(OrderLineItemsDto orderLineItemsDto) {
+        OrderLineItem orderLineItem = new OrderLineItem();
+        orderLineItem.setPrice(orderLineItemsDto.getPrice());
+        orderLineItem.setQuantity(orderLineItemsDto.getQuantity());
+        orderLineItem.setSkuCode(orderLineItemsDto.getSkuCode());
+        return orderLineItem;
     }
 }
 
