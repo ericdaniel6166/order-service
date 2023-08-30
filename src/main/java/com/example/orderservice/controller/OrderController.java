@@ -25,7 +25,8 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public String placeOrder(@RequestBody OrderRequest orderRequest) {
         log.info("Placing Order");
-        return orderService.placeOrder(orderRequest);
+        orderService.placeOrder(orderRequest);
+        return "Order Placed";
     }
 
 

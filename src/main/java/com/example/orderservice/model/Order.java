@@ -3,6 +3,7 @@ package com.example.orderservice.model;
 import com.example.springbootmicroservicesframework.model.BaseEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,7 +19,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
-@Table(name = "order")
+@Table(name = "t_order")
 @Entity
 @Data
 @Builder
@@ -33,6 +34,7 @@ public class Order extends BaseEntity<String> implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String orderNumber;
-    @OneToMany(cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderLineItem> orderLineItemList;
 }
