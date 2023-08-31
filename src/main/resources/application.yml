@@ -2,4 +2,4 @@ spring:
   profiles:
     active:
       - base
-      - dev
+      - local
