@@ -1,5 +1,81 @@
+app:
+  eureka-hostname: localhost
+  eureka-port: 8761
+  database-hostname: localhost
+  database-port: 5433
+  database-name: order_service
+  server-port: 8082
+  application-name: order-service
+  kafka-hostname: localhost
+  kafka-port: 9092
+  kafka-default-topic: notificationTopic
+  kafka-concurrency: 3
+  kafka-group-id: notificationId
+  inventory-client-host: inventory-service
+  inventory-client-port: 8083
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://${app.eureka-hostname}:${app.eureka-port}/eureka
+
 spring:
-  profiles:
-    active:
-      - base
-      - local
+  application:
+    name: ${app.application-name}
+  flyway:
+    baseline-on-migrate: true
+    baseline-version: 0.0
+    locations: classpath:db/migration/
+    validate-on-migrate: true
+    enabled: true
+    table: schema_history
+  kafka:
+    enabled: true
+    bootstrap-servers: ${app.kafka-hostname}:${app.kafka-port}
+    template:
+      default-topic: ${app.kafka-default-topic}
+    producers:
+      internal-producer:
+        topic-name: internalTopic
+      notification-producer:
+        topic-name: notificationTopic
+  #    producer:
+  #      properties:
+
+  datasource:
+    url: jdbc:postgresql://${app.database-hostname}:${app.database-port}/${app.database-name}
+    username: postgres
+    password: secret
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+server:
+  port: ${app.server-port}
+
+logging:
+  level:
+    root: INFO
+
+feign:
+  client:
+    enabled: true
+    config:
+      inventory-client:
+        name: inventory-client
+        url: http://${app.inventory-client-host}:${app.inventory-client-port}
+

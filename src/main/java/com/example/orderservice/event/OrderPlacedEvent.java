@@ -15,5 +15,8 @@ import java.io.Serializable;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 public class OrderPlacedEvent implements Serializable {
+
+    static final long serialVersionUID = 214124343L;
+
     String orderNumber;
 }
