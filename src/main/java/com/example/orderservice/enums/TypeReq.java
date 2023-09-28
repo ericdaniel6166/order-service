@@ -7,7 +7,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum TypeReq {
-    WEB_CLIENT("web-client"),
     FEIGN_CLIENT("feign-client"),
     ;
 

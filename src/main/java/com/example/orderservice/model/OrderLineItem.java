@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -38,6 +39,8 @@ public class OrderLineItem extends BaseEntity<String> implements Serializable {
     private Integer quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @JoinColumn(name = "order_id", referencedColumnName = "id")
     private Order order;
 
