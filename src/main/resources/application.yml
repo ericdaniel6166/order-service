@@ -11,13 +11,16 @@ app:
   kafka-default-topic: notificationTopic
   kafka-concurrency: 3
   kafka-group-id: notificationId
-  inventory-client-host: inventory-service
+  inventory-client-host: localhost
   inventory-client-port: 8083
 
 eureka:
   client:
     serviceUrl:
       defaultZone: http://${app.eureka-hostname}:${app.eureka-port}/eureka
+    registry-fetch-interval-seconds: 5
+  instance:
+    lease-renewal-interval-in-seconds: 5
 
 spring:
   application:
