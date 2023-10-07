@@ -1,7 +1,7 @@
-package com.example.orderservice.client;
+package com.example.orderservice.config.client;
 
 import com.example.orderservice.dto.InventoryResponse;
-import com.example.springbootmicroservicesframework.feign.FeignClientConfig;
+import com.example.springbootmicroservicesframework.config.feign.FeignClientConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;

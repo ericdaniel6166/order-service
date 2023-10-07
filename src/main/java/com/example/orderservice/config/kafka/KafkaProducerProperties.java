@@ -1,4 +1,4 @@
-package com.example.orderservice.kafka;
+package com.example.orderservice.config.kafka;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
-@ConditionalOnProperty(prefix = "spring.kafka", name = "enabled")
+@ConditionalOnProperty(name = "spring.kafka.enabled", havingValue = "true")
 public class KafkaProducerProperties {
 
     @Value("${spring.kafka.producers.internal-producer.topic-name}")
