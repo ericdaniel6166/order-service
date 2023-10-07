@@ -1,4 +1,4 @@
-package com.example.orderservice.controller;
+package com.example.orderservice.api;
 
 import com.example.orderservice.dto.OrderRequest;
 import com.example.orderservice.enums.TypeReq;

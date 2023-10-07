@@ -1,16 +1,16 @@
 package com.example.orderservice.service;
 
-import com.example.orderservice.client.InventoryClient;
+import com.example.orderservice.config.client.InventoryClient;
+import com.example.orderservice.config.kafka.KafkaProducerProperties;
 import com.example.orderservice.dto.InventoryResponse;
 import com.example.orderservice.dto.OrderLineItemsDto;
 import com.example.orderservice.dto.OrderRequest;
 import com.example.orderservice.enums.TypeReq;
 import com.example.orderservice.event.OrderPlacedEvent;
-import com.example.orderservice.kafka.KafkaProducerProperties;
 import com.example.orderservice.model.Order;
 import com.example.orderservice.model.OrderLineItem;
 import com.example.orderservice.repository.OrderRepository;
-import com.example.springbootmicroservicesframework.kafka.Event;
+import com.example.springbootmicroservicesframework.config.kafka.Event;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -53,7 +53,8 @@ public class OrderService {
         List<InventoryResponse> inventoryResponseList = new ArrayList<>();
         switch (typeReq) {
             case FEIGN_CLIENT -> inventoryResponseList = inventoryClient.searchInventory(skuCodes);
-            default -> {}
+            default -> {
+            }
         }
         boolean allProductsInStock = false;
         if (ObjectUtils.isNotEmpty(inventoryResponseList)) {
