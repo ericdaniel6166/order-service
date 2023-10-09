@@ -8,40 +8,44 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.io.Serial;
-import java.io.Serializable;
-import java.math.BigDecimal;
 
-@Table(name = "order_line_item")
+@Table(name = "shipping")
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class OrderLineItem extends BaseEntity<String> implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 2368396243847324953L;
-
+public class Shipping extends BaseEntity<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
-    private String skuCode;
-    private BigDecimal price;
-    private Integer quantity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @JoinColumn(name = "order_id", referencedColumnName = "id")
     private Order order;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Address address;
+
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "tracking_number")
+    private String trackingNumber;
 }

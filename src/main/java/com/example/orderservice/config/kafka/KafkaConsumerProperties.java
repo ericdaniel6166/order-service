@@ -11,9 +11,10 @@ import org.springframework.context.annotation.Configuration;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
 @ConditionalOnProperty(name = "spring.kafka.enabled", havingValue = "true")
-public class KafkaProducerProperties {
+public class KafkaConsumerProperties {
 
-    @Value("${spring.kafka.producers.order-pending.topic-name}")
-    String orderPendingTopicName;
+    @Value("${spring.kafka.consumers.order-item-not-available.group-id}")
+    String orderItemNotAvailableGroupId;
+
 
 }

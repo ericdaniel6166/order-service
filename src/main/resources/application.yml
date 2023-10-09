@@ -38,10 +38,14 @@ spring:
     template:
       default-topic: ${app.kafka-default-topic}
     producers:
-      internal-producer:
-        topic-name: internalTopic
-      notification-producer:
-        topic-name: notificationTopic
+      order-pending:
+        topic-name: order-pending
+    consumers:
+      order-item-not-available:
+        topic-name: order-item-not-available
+        group-id: order-item-not-available
+        properties:
+          concurrency: ${app.kafka-concurrency}
   #    producer:
   #      properties:
 

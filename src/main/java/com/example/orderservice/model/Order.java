@@ -9,15 +9,16 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.io.Serial;
-import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Table(name = "t_order")
@@ -27,17 +28,37 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class Order extends BaseEntity<String> implements Serializable {
-    @Serial
-    private static final long serialVersionUID = 4078865936629506840L;
-
+public class Order extends BaseEntity<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
-    private String orderNumber;
+
+    @Column(name = "user_id")
+    private Long userId;
+
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "fail_reason")
+    private String failReason;
+
+    @Column(name = "total_amount")
+    private BigDecimal totalAmount;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private List<OrderLineItem> orderLineItemList;
+    private List<OrderItem> orderItemList;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Payment payment;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Shipping shipping;
+
 }
