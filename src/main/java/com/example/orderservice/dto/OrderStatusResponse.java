@@ -1,4 +1,4 @@
-package com.example.orderservice.event;
+package com.example.orderservice.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -7,16 +7,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.io.Serializable;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class OrderPlacedEvent implements Serializable {
+public class OrderStatusResponse {
+    Long orderId;
+    String orderStatus;
+    //    @JsonIgnore //uncomment
+    Object failReason;
 
-    static final long serialVersionUID = 214124343L;
-
-    String orderNumber;
 }
