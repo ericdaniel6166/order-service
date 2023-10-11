@@ -8,27 +8,15 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class OrderProcessingEvent implements OrderEvent {
+public class OrderPaymentProcessingEvent implements OrderEvent {
 
     Long orderId;
     String accountNumber;
-    List<OrderProcessingItem> orderProcessingItemList;
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @FieldDefaults(level = AccessLevel.PRIVATE)
-    @Builder
-    public static class OrderProcessingItem {
-        Long productId;
-        Integer orderQuantity;
-        BigDecimal productPrice;
-    }
+    BigDecimal totalAmount;
 }

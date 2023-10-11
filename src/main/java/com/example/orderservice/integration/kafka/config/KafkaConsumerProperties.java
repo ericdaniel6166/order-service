@@ -19,4 +19,8 @@ public class KafkaConsumerProperties {
     @Value("${spring.kafka.consumers.order-processing.group-id}")
     String orderProcessingGroupId;
 
+    @Value("${spring.kafka.consumers.order-payment-processing.group-id}")
+    String orderPaymentProcessingGroupId;
+
+
 }

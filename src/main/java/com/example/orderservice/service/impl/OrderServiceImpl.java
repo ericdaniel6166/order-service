@@ -24,6 +24,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -100,6 +101,7 @@ public class OrderServiceImpl implements OrderService {
                 .build());
 
         OrderPendingEvent orderPendingEvent = OrderPendingEvent.builder()
+                .accountNumber(String.valueOf(RandomUtils.nextLong(100000000000L, 999999999999L))) //improvement later
                 .orderId(order.getId())
                 .orderPendingItemList(request.getOrderItemList().stream()
                         .map(orderItemDto -> modelMapper.map(orderItemDto, OrderPendingEvent.OrderPendingItem.class))
