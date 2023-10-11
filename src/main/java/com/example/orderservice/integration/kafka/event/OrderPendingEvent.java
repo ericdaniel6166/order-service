@@ -19,6 +19,7 @@ public class OrderPendingEvent implements Serializable, OrderEvent {
     static final long serialVersionUID = 21346L;
 
     Long orderId;
+    String accountNumber;
     List<OrderPendingItem> orderPendingItemList;
 
     @Data

@@ -43,14 +43,20 @@ spring:
     consumers:
       order-item-not-available:
         topic-name: order-item-not-available
-        group-id: order-item-not-available
+        group-id: order-item-not-available-${app.application-name}
         properties:
           concurrency: ${app.kafka-concurrency}
       order-processing:
         topic-name: order-processing
-        group-id: order-processing
+        group-id: order-processing-${app.application-name}
         properties:
           concurrency: ${app.kafka-concurrency}
+      order-payment-processing:
+        topic-name: order-payment-processing
+        group-id: order-payment-processing-${app.application-name}
+        properties:
+          concurrency: ${app.kafka-concurrency}
+
 
   #    producer:
   #      properties:

@@ -19,7 +19,6 @@ public class ItemNotAvailableEvent implements Serializable, OrderEvent {
     static final long serialVersionUID = 21345L;
 
     Long orderId;
-
     List<ItemNotAvailable> itemNotAvailableList;
 
     @Data

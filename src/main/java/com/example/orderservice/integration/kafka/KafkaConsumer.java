@@ -2,6 +2,7 @@ package com.example.orderservice.integration.kafka;
 
 import com.example.orderservice.enums.OrderStatus;
 import com.example.orderservice.integration.kafka.event.ItemNotAvailableEvent;
+import com.example.orderservice.integration.kafka.event.OrderPaymentProcessingEvent;
 import com.example.orderservice.integration.kafka.event.OrderProcessingEvent;
 import com.example.orderservice.service.OrderService;
 import com.example.springbootmicroservicesframework.kafka.event.Event;
@@ -43,6 +44,17 @@ public class KafkaConsumer {
         var orderProcessingEvent = modelMapper.map(kafkaEvent.getPayload(), OrderProcessingEvent.class);
         log.info("handle orderProcessingEvent {}", orderProcessingEvent);
         orderService.handleOrderEvent(orderProcessingEvent, OrderStatus.PROCESSING);
+    }
+
+    @KafkaListener(topics = "${spring.kafka.consumers.order-payment-processing.topic-name}",
+            groupId = "${spring.kafka.consumers.order-payment-processing.group-id}",
+            containerFactory = "orderPaymentProcessingKafkaListenerContainerFactory",
+            concurrency = "${spring.kafka.consumers.order-payment-processing.properties.concurrency}"
+    )
+    public void handleOrderPaymentProcessing(Event kafkaEvent) throws JsonProcessingException {
+        var orderPaymentProcessingEvent = modelMapper.map(kafkaEvent.getPayload(), OrderPaymentProcessingEvent.class);
+        log.info("handle orderPaymentProcessingEvent {}", orderPaymentProcessingEvent);
+        orderService.handleOrderEvent(orderPaymentProcessingEvent, OrderStatus.PAYMENT_PROCESSING);
     }
 
 }

@@ -27,4 +27,10 @@ public class KafkaConsumerGroupIdConfig {
         return kafkaConsumerConfig.kafkaListenerContainerFactory(kafkaConsumerProperties.getOrderProcessingGroupId());
     }
 
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, Object> orderPaymentProcessingKafkaListenerContainerFactory() {
+        return kafkaConsumerConfig.kafkaListenerContainerFactory(kafkaConsumerProperties.getOrderPaymentProcessingGroupId());
+    }
+
+
 }
