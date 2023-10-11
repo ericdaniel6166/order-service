@@ -13,6 +13,6 @@ import lombok.experimental.FieldDefaults;
 public class OrderStatusDto {
     String orderStatus;
     //    @JsonIgnore //uncomment
-    String failReason;
+    String orderDetail;
 
 }

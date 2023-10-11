@@ -6,10 +6,16 @@ import java.util.Optional;
 public enum OrderStatus {
     PENDING,       // Order has been placed but not yet processed.
     PROCESSING, // Order is being processed, e.g., payment authorization and item preparation.
-    SHIPPED,       // Items have been shipped to the customer.
+    PAYMENT_PROCESSING,
+    PAYMENT_SUCCESS,
+    SHIPPING_PROCESSING,
+    SHIPPING_SUCCESS, // Items have been shipped to the customer.
+    DELIVERED_PROCESSING,
+    DELIVERED_SUCCESS,
     DELIVERED,   // Order has been successfully delivered to the customer.
     CANCELLED,  // Order has been cancelled by the customer or admin.
-    FAIL_ITEM_NOT_AVAILABLE,
+    ITEM_NOT_AVAILABLE,
+    PAYMENT_FAIL,
     ;
 
 

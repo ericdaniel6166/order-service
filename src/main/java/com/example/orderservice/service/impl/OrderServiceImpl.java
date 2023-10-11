@@ -1,21 +1,21 @@
 package com.example.orderservice.service.impl;
 
-import com.example.orderservice.config.kafka.KafkaProducerProperties;
 import com.example.orderservice.dto.OrderRequest;
 import com.example.orderservice.dto.OrderStatusDto;
 import com.example.orderservice.dto.OrderStatusResponse;
 import com.example.orderservice.enums.OrderStatus;
 import com.example.orderservice.integration.client.InventoryClient;
-import com.example.orderservice.integration.event.ItemNotAvailableEvent;
-import com.example.orderservice.integration.event.OrderPendingEvent;
+import com.example.orderservice.integration.kafka.config.KafkaProducerProperties;
+import com.example.orderservice.integration.kafka.event.OrderEvent;
+import com.example.orderservice.integration.kafka.event.OrderPendingEvent;
 import com.example.orderservice.mapper.OrderMapper;
 import com.example.orderservice.model.Order;
 import com.example.orderservice.model.OrderStatusHistory;
 import com.example.orderservice.repository.OrderRepository;
 import com.example.orderservice.repository.OrderStatusHistoryRepository;
 import com.example.orderservice.service.OrderService;
-import com.example.springbootmicroservicesframework.dto.Event;
 import com.example.springbootmicroservicesframework.exception.NotFoundException;
+import com.example.springbootmicroservicesframework.kafka.event.Event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,26 +62,26 @@ public class OrderServiceImpl implements OrderService {
         OrderStatusDto orderStatusDto = orderRepository.getStatus(id)
                 .orElseThrow(() -> new NotFoundException(String.format("orderId %s", id)));
 
-        JsonNode jsonNode = objectMapper.readTree(orderStatusDto.getFailReason());
+        JsonNode jsonNode = objectMapper.readTree(orderStatusDto.getOrderDetail());
         ObjectNode objectNode = (ObjectNode) jsonNode;
         objectNode.remove(ORDER_ID);
 
         return orderMapper.mapToOrderStatusResponse(orderStatusDto, id,
                 OrderStatusResponse.builder()
-                        .failReason(objectNode)
+                        .orderDetail(objectNode)
                         .build());
     }
 
     @Transactional
     @Override
-    public void handleOrderItemNotAvailable(ItemNotAvailableEvent itemNotAvailableEvent) throws JsonProcessingException {
-        String failReason = objectMapper.writeValueAsString(itemNotAvailableEvent);
-        orderRepository.update(itemNotAvailableEvent.getOrderId(), OrderStatus.FAIL_ITEM_NOT_AVAILABLE.name(),
-                failReason, LocalDateTime.now());
+    public void handleOrderEvent(OrderEvent orderEvent, OrderStatus orderStatus) throws JsonProcessingException {
+        String orderDetail = objectMapper.writeValueAsString(orderEvent);
+        orderRepository.update(orderEvent.getOrderId(), orderStatus.name(),
+                orderDetail, LocalDateTime.now());
         orderStatusHistoryRepository.saveAndFlush(OrderStatusHistory.builder()
-                .orderId(itemNotAvailableEvent.getOrderId())
-                .status(OrderStatus.FAIL_ITEM_NOT_AVAILABLE.name())
-                .failReason(failReason)
+                .orderId(orderEvent.getOrderId())
+                .status(orderStatus.name())
+                .orderDetail(orderDetail)
                 .build());
 
     }
@@ -101,8 +101,8 @@ public class OrderServiceImpl implements OrderService {
 
         OrderPendingEvent orderPendingEvent = OrderPendingEvent.builder()
                 .orderId(order.getId())
-                .orderItemList(request.getOrderItemList().stream()
-                        .map(orderItemDto -> modelMapper.map(orderItemDto, OrderPendingEvent.OrderItemDto.class))
+                .orderPendingItemList(request.getOrderItemList().stream()
+                        .map(orderItemDto -> modelMapper.map(orderItemDto, OrderPendingEvent.OrderPendingItem.class))
                         .toList())
                 .build();
         log.info("send orderPendingEvent {}", orderPendingEvent);

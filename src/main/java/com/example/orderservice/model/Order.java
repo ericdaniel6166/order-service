@@ -40,8 +40,8 @@ public class Order extends BaseEntity<String> {
     @Column(name = "status")
     private String status;
 
-    @Column(name = "fail_reason")
-    private String failReason;
+    @Column(name = "order_detail")
+    private String orderDetail;
 
     @Column(name = "total_amount")
     private BigDecimal totalAmount;

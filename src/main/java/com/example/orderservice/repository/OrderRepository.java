@@ -15,11 +15,11 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("""
             update Order o 
             set o.status = :status, 
-            o.failReason = :failReason,
+            o.orderDetail = :orderDetail,
             o.lastModifiedDate = :now 
             where o.id = :id
             """)
-    void update(Long id, String status, String failReason, LocalDateTime now);
+    void update(Long id, String status, String orderDetail, LocalDateTime now);
 
     @Modifying
     @Query("""
@@ -31,7 +31,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     void update(Long id, String status, LocalDateTime now);
 
     @Query("""
-            select new com.example.orderservice.dto.OrderStatusDto(o.status, o.failReason) 
+            select new com.example.orderservice.dto.OrderStatusDto(o.status, o.orderDetail) 
             from Order o 
             where o.id = :id
             """)

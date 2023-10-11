@@ -1,4 +1,4 @@
-package com.example.orderservice.integration.event;
+package com.example.orderservice.integration.kafka.event;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -15,23 +16,20 @@ import java.util.List;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class ItemNotAvailableEvent implements Serializable {
-    static final long serialVersionUID = 21345L;
+public class OrderProcessingEvent implements Serializable, OrderEvent {
+    static final long serialVersionUID = 12346L;
 
     Long orderId;
-
-    List<ItemNotAvailable> itemNotAvailableList;
+    List<OrderProcessingItem> orderProcessingItemList;
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     @FieldDefaults(level = AccessLevel.PRIVATE)
     @Builder
-    public static class ItemNotAvailable {
+    public static class OrderProcessingItem {
         Long productId;
         Integer orderQuantity;
-        Integer inventoryQuantity;
+        BigDecimal productPrice;
     }
-
-
 }

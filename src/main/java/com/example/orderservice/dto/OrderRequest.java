@@ -18,6 +18,6 @@ public class OrderRequest {
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class OrderItemDto {
         Long productId;
-        Integer quantity;
+        Integer orderQuantity;
     }
 }

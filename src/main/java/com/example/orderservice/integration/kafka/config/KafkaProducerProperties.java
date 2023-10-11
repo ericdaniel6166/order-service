@@ -1,4 +1,4 @@
-package com.example.orderservice.config.kafka;
+package com.example.orderservice.integration.kafka.config;
 
 import lombok.AccessLevel;
 import lombok.Data;

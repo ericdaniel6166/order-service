@@ -16,6 +16,6 @@ public class OrderStatusResponse {
     Long orderId;
     String orderStatus;
     //    @JsonIgnore //uncomment
-    Object failReason;
+    Object orderDetail;
 
 }
