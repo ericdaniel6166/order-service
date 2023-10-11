@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
@@ -15,8 +14,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-public class OrderPaymentProcessingEvent implements Serializable, OrderEvent {
-    static final long serialVersionUID = 12346L;
+public class OrderPaymentProcessingEvent implements OrderEvent {
 
     Long orderId;
     String accountNumber;
