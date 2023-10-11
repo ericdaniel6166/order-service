@@ -1,6 +1,6 @@
-package com.example.orderservice.config.kafka;
+package com.example.orderservice.integration.kafka.config;
 
-import com.example.springbootmicroservicesframework.config.kafka.KafkaConsumerConfig;
+import com.example.springbootmicroservicesframework.kafka.config.KafkaConsumerConfig;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,6 +20,11 @@ public class KafkaConsumerGroupIdConfig {
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, Object> orderItemNotAvailableKafkaListenerContainerFactory() {
         return kafkaConsumerConfig.kafkaListenerContainerFactory(kafkaConsumerProperties.getOrderItemNotAvailableGroupId());
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, Object> orderProcessingKafkaListenerContainerFactory() {
+        return kafkaConsumerConfig.kafkaListenerContainerFactory(kafkaConsumerProperties.getOrderProcessingGroupId());
     }
 
 }

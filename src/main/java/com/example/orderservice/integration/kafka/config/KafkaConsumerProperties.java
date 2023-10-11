@@ -1,4 +1,4 @@
-package com.example.orderservice.config.kafka;
+package com.example.orderservice.integration.kafka.config;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -16,5 +16,7 @@ public class KafkaConsumerProperties {
     @Value("${spring.kafka.consumers.order-item-not-available.group-id}")
     String orderItemNotAvailableGroupId;
 
+    @Value("${spring.kafka.consumers.order-processing.group-id}")
+    String orderProcessingGroupId;
 
 }

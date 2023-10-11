@@ -9,6 +9,6 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
 
-    @Mapping(target = "failReason", ignore = true)
+    @Mapping(target = "orderDetail", ignore = true)
     OrderStatusResponse mapToOrderStatusResponse(OrderStatusDto orderStatusDto, Long orderId, @MappingTarget OrderStatusResponse orderStatusResponse);
 }

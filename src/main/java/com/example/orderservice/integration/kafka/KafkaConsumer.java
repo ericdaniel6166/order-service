@@ -1,8 +1,10 @@
-package com.example.orderservice.integration;
+package com.example.orderservice.integration.kafka;
 
-import com.example.orderservice.integration.event.ItemNotAvailableEvent;
+import com.example.orderservice.enums.OrderStatus;
+import com.example.orderservice.integration.kafka.event.ItemNotAvailableEvent;
+import com.example.orderservice.integration.kafka.event.OrderProcessingEvent;
 import com.example.orderservice.service.OrderService;
-import com.example.springbootmicroservicesframework.dto.Event;
+import com.example.springbootmicroservicesframework.kafka.event.Event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +31,18 @@ public class KafkaConsumer {
     public void handleOrderItemNotAvailable(Event kafkaEvent) throws JsonProcessingException {
         var itemNotAvailableEvent = modelMapper.map(kafkaEvent.getPayload(), ItemNotAvailableEvent.class);
         log.info("handle itemNotAvailableEvent {}", itemNotAvailableEvent);
-        orderService.handleOrderItemNotAvailable(itemNotAvailableEvent);
+        orderService.handleOrderEvent(itemNotAvailableEvent, OrderStatus.ITEM_NOT_AVAILABLE);
+    }
+
+    @KafkaListener(topics = "${spring.kafka.consumers.order-processing.topic-name}",
+            groupId = "${spring.kafka.consumers.order-processing.group-id}",
+            containerFactory = "orderProcessingKafkaListenerContainerFactory",
+            concurrency = "${spring.kafka.consumers.order-processing.properties.concurrency}"
+    )
+    public void handleOrderProcessing(Event kafkaEvent) throws JsonProcessingException {
+        var orderProcessingEvent = modelMapper.map(kafkaEvent.getPayload(), OrderProcessingEvent.class);
+        log.info("handle orderProcessingEvent {}", orderProcessingEvent);
+        orderService.handleOrderEvent(orderProcessingEvent, OrderStatus.PROCESSING);
     }
 
 }

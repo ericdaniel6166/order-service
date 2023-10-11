@@ -33,6 +33,6 @@ public class OrderStatusHistory extends BaseEntity<String> {
     @Column(name = "status")
     private String status;
 
-    @Column(name = "fail_reason")
-    private String failReason;
+    @Column(name = "order_detail")
+    private String orderDetail;
 }

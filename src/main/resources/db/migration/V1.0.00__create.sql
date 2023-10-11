@@ -1,82 +1,82 @@
-create table if not exists address
+CREATE TABLE IF NOT EXISTS address
 (
-    id                 serial primary key,
-    user_id            bigint,
-    street             varchar(255),
-    city               varchar(255),
-    country            varchar(255),
-    phone_number       varchar(255),
-    created_by         varchar(255),
-    created_date       timestamp(6),
-    last_modified_by   varchar(255),
-    last_modified_date timestamp(6)
+    id                 SERIAL PRIMARY KEY,
+    user_id            BIGINT,
+    street             VARCHAR(255),
+    city               VARCHAR(255),
+    country            VARCHAR(255),
+    phone_number       VARCHAR(255),
+    created_by         VARCHAR(255),
+    created_date       TIMESTAMP(6),
+    last_modified_by   VARCHAR(255),
+    last_modified_date TIMESTAMP(6)
 );
 
 
-create table if not exists t_order
+CREATE TABLE IF NOT EXISTS t_order
 (
-    id                 bigserial primary key,
-    user_id            bigint,
-    status             varchar(255),
-    fail_reason        text,
-    total_amount       numeric(19, 4),
-    created_by         varchar(255),
-    created_date       timestamp(6),
-    last_modified_by   varchar(255),
-    last_modified_date timestamp(6)
+    id                 BIGSERIAL PRIMARY KEY,
+    user_id            BIGINT,
+    status             VARCHAR(255),
+    order_detail       TEXT,
+    total_amount       NUMERIC(19, 4),
+    created_by         VARCHAR(255),
+    created_date       TIMESTAMP(6),
+    last_modified_by   VARCHAR(255),
+    last_modified_date TIMESTAMP(6)
 );
 
 
-create table if not exists order_item
+CREATE TABLE IF NOT EXISTS order_item
 (
-    id                 bigserial primary key,
-    order_id           bigint references t_order (id),
-    product_id         bigint,
-    quantity           integer,
-    price              numeric(19, 4),
-    subtotal           numeric(19, 4),
-    created_by         varchar(255),
-    created_date       timestamp(6),
-    last_modified_by   varchar(255),
-    last_modified_date timestamp(6)
+    id                 BIGSERIAL PRIMARY KEY,
+    order_id           BIGINT REFERENCES t_order (id),
+    product_id         BIGINT,
+    quantity           INTEGER,
+    price              NUMERIC(19, 4),
+    subtotal           NUMERIC(19, 4),
+    created_by         VARCHAR(255),
+    created_date       TIMESTAMP(6),
+    last_modified_by   VARCHAR(255),
+    last_modified_date TIMESTAMP(6)
 );
 
 
-create table if not exists payment
+CREATE TABLE IF NOT EXISTS payment
 (
-    id                 bigserial primary key,
-    order_id           bigint references t_order (id),
-    amount             numeric(19, 4),
-    status             varchar(255),
-    created_by         varchar(255),
-    created_date       timestamp(6),
-    last_modified_by   varchar(255),
-    last_modified_date timestamp(6)
+    id                 BIGSERIAL PRIMARY KEY,
+    order_id           BIGINT REFERENCES t_order (id),
+    amount             NUMERIC(19, 4),
+    status             VARCHAR(255),
+    created_by         VARCHAR(255),
+    created_date       TIMESTAMP(6),
+    last_modified_by   VARCHAR(255),
+    last_modified_date TIMESTAMP(6)
 );
 
 
-create table if not exists shipping
+CREATE TABLE IF NOT EXISTS shipping
 (
-    id                 bigserial primary key,
-    order_id           bigint references t_order (id),
-    address_id         bigint references address (id),
-    status             varchar(255),
-    tracking_number    varchar(255),
-    created_by         varchar(255),
-    created_date       timestamp(6),
-    last_modified_by   varchar(255),
-    last_modified_date timestamp(6)
+    id                 BIGSERIAL PRIMARY KEY,
+    order_id           BIGINT REFERENCES t_order (id),
+    address_id         BIGINT REFERENCES address (id),
+    status             VARCHAR(255),
+    tracking_number    VARCHAR(255),
+    created_by         VARCHAR(255),
+    created_date       TIMESTAMP(6),
+    last_modified_by   VARCHAR(255),
+    last_modified_date TIMESTAMP(6)
 );
 
 
-create table if not exists order_status_history
+CREATE TABLE IF NOT EXISTS order_status_history
 (
-    id                 bigserial primary key,
-    order_id           bigint references t_order (id),
-    status             varchar(255),
-    fail_reason        text,
-    created_by         varchar(255),
-    created_date       timestamp(6),
-    last_modified_by   varchar(255),
-    last_modified_date timestamp(6)
+    id                 BIGSERIAL PRIMARY KEY,
+    order_id           BIGINT REFERENCES t_order (id),
+    status             VARCHAR(255),
+    order_detail       TEXT,
+    created_by         VARCHAR(255),
+    created_date       TIMESTAMP(6),
+    last_modified_by   VARCHAR(255),
+    last_modified_date TIMESTAMP(6)
 );

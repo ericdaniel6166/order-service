@@ -46,6 +46,12 @@ spring:
         group-id: order-item-not-available
         properties:
           concurrency: ${app.kafka-concurrency}
+      order-processing:
+        topic-name: order-processing
+        group-id: order-processing
+        properties:
+          concurrency: ${app.kafka-concurrency}
+
   #    producer:
   #      properties:
 
