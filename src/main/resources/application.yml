@@ -13,6 +13,7 @@ app:
   kafka-group-id: notificationId
   inventory-client-host: localhost
   inventory-client-port: 8083
+  context-path: api/order
 
 eureka:
   client:
@@ -86,6 +87,8 @@ management:
 
 server:
   port: ${app.server-port}
+  servlet:
+    context-path: /${app.context-path}
 
 logging:
   level:

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public interface OrderService {
     OrderStatusResponse place(OrderRequest request);
 
-    void handleOrderEvent(OrderEvent itemNotAvailableEvent, OrderStatus failItemNotAvailable) throws JsonProcessingException;
+    void handleOrderEvent(OrderEvent orderEvent, OrderStatus orderStatus) throws JsonProcessingException;
 
     OrderStatusResponse getStatus(Long id) throws NotFoundException, JsonProcessingException;
 

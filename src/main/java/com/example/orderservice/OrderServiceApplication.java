@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages = { "com.example" })
+@ComponentScan(basePackages = {"com.example"})
 @EnableEurekaClient
 @EnableFeignClients
 public class OrderServiceApplication {
