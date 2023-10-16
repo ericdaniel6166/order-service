@@ -13,6 +13,9 @@ app:
   kafka-group-id: notificationId
   inventory-client-host: localhost
   inventory-client-port: 8083
+  context-path: api/order
+  api-gateway-hostname: localhost
+  api-gateway-server-port: 8181
 
 eureka:
   client:
@@ -86,10 +89,14 @@ management:
 
 server:
   port: ${app.server-port}
+  servlet:
+    context-path: /${app.context-path}
 
 logging:
   level:
     root: INFO
+  pattern:
+    level: "%5p[${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 
 feign:
   client:
@@ -99,3 +106,12 @@ feign:
         name: inventory-client
         url: http://${app.inventory-client-host}:${app.inventory-client-port}
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+
+swagger:
+  server:
+    url: http://${app.api-gateway-hostname}:${app.api-gateway-server-port}/${app.context-path}
