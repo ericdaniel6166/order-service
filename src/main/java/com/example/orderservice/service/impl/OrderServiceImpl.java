@@ -4,7 +4,6 @@ import com.example.orderservice.dto.OrderRequest;
 import com.example.orderservice.dto.OrderStatusDto;
 import com.example.orderservice.dto.OrderStatusResponse;
 import com.example.orderservice.enums.OrderStatus;
-import com.example.orderservice.integration.client.InventoryClient;
 import com.example.orderservice.integration.kafka.config.KafkaProducerProperties;
 import com.example.orderservice.integration.kafka.event.OrderEvent;
 import com.example.orderservice.integration.kafka.event.OrderPendingEvent;
@@ -47,7 +46,7 @@ public class OrderServiceImpl implements OrderService {
 
     final KafkaTemplate<String, Object> kafkaTemplate;
 
-    final InventoryClient inventoryClient;
+//    final InventoryClient inventoryClient;
 
     final KafkaProducerProperties kafkaProducerProperties;
 
