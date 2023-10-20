@@ -1,24 +1,18 @@
-package com.example.orderservice.integration.kafka.event;
+package com.example.orderservice.dto;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
-@Builder
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderPendingEvent implements OrderEvent {
-
-    Long orderId;
-    String accountNumber;
+public class PlaceOrderRequest {
+    Long userId;
     List<Item> itemList;
+    Long addressId;
+//    PaymentDetail paymentDetail; //improve later
 
     @Data
     @FieldDefaults(level = AccessLevel.PRIVATE)

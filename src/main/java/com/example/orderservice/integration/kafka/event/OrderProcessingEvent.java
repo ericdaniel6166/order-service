@@ -19,14 +19,14 @@ public class OrderProcessingEvent implements OrderEvent {
 
     Long orderId;
     String accountNumber;
-    List<OrderProcessingItem> orderProcessingItemList;
+    List<Item> itemList;
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     @FieldDefaults(level = AccessLevel.PRIVATE)
     @Builder
-    public static class OrderProcessingItem {
+    public static class Item {
         Long productId;
         Integer orderQuantity;
         BigDecimal productPrice;

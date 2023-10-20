@@ -16,6 +16,7 @@ public enum OrderStatus {
     CANCELLED,  // Order has been cancelled by the customer or admin.
     ITEM_NOT_AVAILABLE,
     PAYMENT_FAIL,
+    ERROR,
     ;
 
 
