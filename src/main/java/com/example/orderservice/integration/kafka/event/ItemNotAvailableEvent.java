@@ -17,14 +17,14 @@ import java.util.List;
 public class ItemNotAvailableEvent implements OrderEvent {
 
     Long orderId;
-    List<ItemNotAvailable> itemNotAvailableList;
+    List<Item> itemList;
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     @FieldDefaults(level = AccessLevel.PRIVATE)
     @Builder
-    public static class ItemNotAvailable {
+    public static class Item {
         Long productId;
         Integer orderQuantity;
         Integer inventoryQuantity;

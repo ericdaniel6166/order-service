@@ -1,9 +1,10 @@
 package com.example.orderservice.service.impl;
 
 import com.example.orderservice.dto.OrderRequest;
-import com.example.orderservice.dto.OrderStatusDto;
 import com.example.orderservice.dto.OrderStatusResponse;
+import com.example.orderservice.dto.PlaceOrderRequest;
 import com.example.orderservice.enums.OrderStatus;
+import com.example.orderservice.integration.client.InventoryClient;
 import com.example.orderservice.integration.kafka.config.KafkaProducerProperties;
 import com.example.orderservice.integration.kafka.event.OrderEvent;
 import com.example.orderservice.integration.kafka.event.OrderPendingEvent;
@@ -16,7 +17,6 @@ import com.example.orderservice.service.OrderService;
 import com.example.springbootmicroservicesframework.exception.NotFoundException;
 import com.example.springbootmicroservicesframework.kafka.event.Event;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.AccessLevel;
@@ -39,6 +39,7 @@ import java.time.LocalDateTime;
 public class OrderServiceImpl implements OrderService {
 
     static final String ORDER_ID = "orderId";
+    static final String ORDER_STATUS = "orderStatus";
 
     final OrderRepository orderRepository;
 
@@ -46,7 +47,7 @@ public class OrderServiceImpl implements OrderService {
 
     final KafkaTemplate<String, Object> kafkaTemplate;
 
-//    final InventoryClient inventoryClient;
+    final InventoryClient inventoryClient;
 
     final KafkaProducerProperties kafkaProducerProperties;
 
@@ -59,23 +60,30 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderStatusResponse getStatus(Long id) throws NotFoundException, JsonProcessingException {
-        OrderStatusDto orderStatusDto = orderRepository.getStatus(id)
-                .orElseThrow(() -> new NotFoundException(String.format("orderId %s", id)));
+        var orderStatusDto = orderRepository.getStatus(id)
+                .orElseThrow(() -> new NotFoundException(String.format("order id %s", id)));
+        String orderDetailStr = orderStatusDto.getOrderDetail();
+        var orderDetail = getOrderDetail(orderDetailStr);
 
-        JsonNode jsonNode = objectMapper.readTree(orderStatusDto.getOrderDetail());
-        ObjectNode objectNode = (ObjectNode) jsonNode;
-        objectNode.remove(ORDER_ID);
+        return OrderStatusResponse.builder()
+                .orderId(id)
+                .orderStatus(orderStatusDto.getOrderStatus())
+                .orderDetail(orderDetail)
+                .build();
+    }
 
-        return orderMapper.mapToOrderStatusResponse(orderStatusDto, id,
-                OrderStatusResponse.builder()
-                        .orderDetail(objectNode)
-                        .build());
+    private ObjectNode getOrderDetail(String orderDetailStr) throws JsonProcessingException {
+        var jsonNode = objectMapper.readTree(orderDetailStr);
+        var orderDetail = (ObjectNode) jsonNode;
+        orderDetail.remove(ORDER_ID);
+        orderDetail.remove(ORDER_STATUS);
+        return orderDetail;
     }
 
     @Transactional
     @Override
     public void handleOrderEvent(OrderEvent orderEvent, OrderStatus orderStatus) throws JsonProcessingException {
-        String orderDetail = objectMapper.writeValueAsString(orderEvent);
+        var orderDetail = objectMapper.writeValueAsString(orderEvent);
         orderRepository.update(orderEvent.getOrderId(), orderStatus.name(),
                 orderDetail, LocalDateTime.now());
         orderStatusHistoryRepository.saveAndFlush(OrderStatusHistory.builder()
@@ -88,24 +96,14 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Override
-    public OrderStatusResponse place(OrderRequest request) {
-        Order order = Order.builder()
-                .status(OrderStatus.PENDING.name())
-                .userId(request.getUserId())
-                .build();
-        orderRepository.saveAndFlush(order);
+    public OrderStatusResponse placeKafka(PlaceOrderRequest request) throws JsonProcessingException {
+        var order = saveOrderPending(request);
+        var orderPendingEvent = buildOrderPendingEvent(request, order);
         orderStatusHistoryRepository.saveAndFlush(OrderStatusHistory.builder()
                 .orderId(order.getId())
                 .status(order.getStatus())
+                .orderDetail(objectMapper.writeValueAsString(orderPendingEvent))
                 .build());
-
-        OrderPendingEvent orderPendingEvent = OrderPendingEvent.builder()
-                .accountNumber(String.valueOf(RandomUtils.nextLong(100000000000L, 999999999999L))) //improvement later
-                .orderId(order.getId())
-                .orderPendingItemList(request.getOrderItemList().stream()
-                        .map(orderItemDto -> modelMapper.map(orderItemDto, OrderPendingEvent.OrderPendingItem.class))
-                        .toList())
-                .build();
         log.info("send orderPendingEvent {}", orderPendingEvent);
         kafkaTemplate.send(kafkaProducerProperties.getOrderPendingTopicName(), Event.builder()
                 .payload(orderPendingEvent)
@@ -115,6 +113,62 @@ public class OrderServiceImpl implements OrderService {
                 .orderStatus(order.getStatus())
                 .build();
     }
+
+    private Order saveOrderPending(PlaceOrderRequest request) {
+        var order = Order.builder()
+                .status(OrderStatus.PENDING.name())
+                .userId(request.getUserId())
+                .build();
+        orderRepository.saveAndFlush(order);
+        return order;
+    }
+
+    private OrderPendingEvent buildOrderPendingEvent(PlaceOrderRequest request, Order order) {
+        return OrderPendingEvent.builder()
+                .accountNumber(String.valueOf(RandomUtils.nextLong(100000000000L, 999999999999L))) //improvement later
+                .orderId(order.getId())
+                .itemList(request.getItemList().stream()
+                        .map(item -> modelMapper.map(item, OrderPendingEvent.Item.class))
+                        .toList())
+                .build();
+    }
+
+    private OrderRequest buildOrderPendingRequest(PlaceOrderRequest request, Order order) {
+        return OrderRequest.builder()
+                .accountNumber(String.valueOf(RandomUtils.nextLong(100000000000L, 999999999999L))) //improvement later
+                .orderId(order.getId())
+                .itemList(request.getItemList().stream()
+                        .map(item -> modelMapper.map(item, OrderRequest.Item.class))
+                        .toList())
+                .build();
+    }
+
+    @Transactional
+    @Override
+    public OrderStatusResponse placeOpenFeign(PlaceOrderRequest request) throws JsonProcessingException {
+        var order = saveOrderPending(request);
+        var orderRequest = buildOrderPendingRequest(request, order);
+        var orderStatusHistory = OrderStatusHistory.builder()
+                .orderId(order.getId())
+                .status(order.getStatus())
+                .orderDetail(objectMapper.writeValueAsString(orderRequest))
+                .build();
+        orderStatusHistoryRepository.saveAndFlush(orderStatusHistory);
+
+        var orderResponse = inventoryClient.handleOrderPendingOpenFeign(orderRequest);
+        var orderRes = orderMapper.mapToOrder(order, Order.builder()
+                .orderDetail(objectMapper.writeValueAsString(orderResponse))
+                .status(orderResponse.getOrderStatus().name())
+                .build());
+        orderRepository.saveAndFlush(orderRes);
+        orderStatusHistoryRepository.saveAndFlush(orderMapper.mapToOrderStatusHistory(orderRes, new OrderStatusHistory()));
+        return OrderStatusResponse.builder()
+                .orderId(orderRes.getId())
+                .orderStatus(orderRes.getStatus())
+                .orderDetail(getOrderDetail(orderRes.getOrderDetail()))
+                .build();
+    }
+
 
 }
 

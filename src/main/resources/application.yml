@@ -11,8 +11,9 @@ app:
   kafka-default-topic: notificationTopic
   kafka-concurrency: 3
   kafka-group-id: notificationId
-  inventory-client-host: localhost
-  inventory-client-port: 8083
+  inventory-service-hostname: localhost
+  inventory-service-server-port: 8083
+  inventory-service-context-path: api/inventory
   context-path: api/order
   api-gateway-hostname: localhost
   api-gateway-server-port: 8181
@@ -102,9 +103,11 @@ feign:
   client:
     enabled: true
     config:
+
       inventory-client:
+
         name: inventory-client
-        url: http://${app.inventory-client-host}:${app.inventory-client-port}
+        url: http://${app.inventory-service-hostname}:${app.inventory-service-server-port}/${app.inventory-service-context-path}
 
 springdoc:
   swagger-ui:

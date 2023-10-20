@@ -1,7 +1,7 @@
 package com.example.orderservice.api;
 
-import com.example.orderservice.dto.OrderRequest;
 import com.example.orderservice.dto.OrderStatusResponse;
+import com.example.orderservice.dto.PlaceOrderRequest;
 import com.example.orderservice.service.OrderService;
 import com.example.springbootmicroservicesframework.exception.NotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -22,15 +22,18 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/place-kafka")
-    public ResponseEntity<OrderStatusResponse> place(@RequestBody OrderRequest request) {
-        OrderStatusResponse orderStatusResponse = orderService.place(request);
-        return ResponseEntity.ok(orderStatusResponse);
+    public ResponseEntity<OrderStatusResponse> placeKafka(@RequestBody PlaceOrderRequest request) throws JsonProcessingException {
+        return ResponseEntity.ok(orderService.placeKafka(request));
+    }
+
+    @PostMapping("/place-open-feign")
+    public ResponseEntity<OrderStatusResponse> placeOpenFeign(@RequestBody PlaceOrderRequest request) throws JsonProcessingException {
+        return ResponseEntity.ok(orderService.placeOpenFeign(request));
     }
 
     @GetMapping("/status/{id}")
     public ResponseEntity<OrderStatusResponse> getStatus(@PathVariable Long id) throws NotFoundException, JsonProcessingException {
-        OrderStatusResponse orderStatusResponse = orderService.getStatus(id);
-        return ResponseEntity.ok(orderStatusResponse);
+        return ResponseEntity.ok(orderService.getStatus(id));
     }
 
 }
