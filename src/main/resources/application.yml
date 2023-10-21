@@ -17,6 +17,9 @@ app:
   context-path: api/order
   api-gateway-hostname: localhost
   api-gateway-server-port: 8181
+  zipkin-hostname: localhost
+  zipkin-server-port: 9411
+  zipkin-context-path: api/v2/spans
 
 eureka:
   client:
@@ -87,6 +90,12 @@ management:
   endpoint:
     health:
       show-details: always
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://${app.zipkin-hostname}:${app.zipkin-server-port}/${app.zipkin-context-path}
 
 server:
   port: ${app.server-port}
@@ -103,9 +112,7 @@ feign:
   client:
     enabled: true
     config:
-
       inventory-client:
-
         name: inventory-client
         url: http://${app.inventory-service-hostname}:${app.inventory-service-server-port}/${app.inventory-service-context-path}
 
@@ -118,3 +125,25 @@ springdoc:
 swagger:
   server:
     url: http://${app.api-gateway-hostname}:${app.api-gateway-server-port}/${app.context-path}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      place-order:
+        registerHealthIndicator: true
+        event-consumer-buffer-size: 10
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+  timelimiter:
+    instances:
+      place-order:
+        timeout-duration: 3s
+  retry:
+    instances:
+      place-order:
+        max-attempts: 3
+        wait-duration: 5s
