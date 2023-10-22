@@ -4,4 +4,6 @@ app:
   database-port: 5432
   kafka-hostname: broker
   kafka-port: 29092
-  inventory-client-host: inventory-service
+  inventory-service-hostname: inventory-service
+  api-gateway-hostname: api-gateway
+  zipkin-hostname: zipkin
