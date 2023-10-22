@@ -155,7 +155,9 @@ public class OrderServiceImpl implements OrderService {
                 .build();
         orderStatusHistoryRepository.saveAndFlush(orderStatusHistory);
 
+        log.info("call to inventory-service, orderId {}", orderRequest.getOrderId());
         var orderResponse = inventoryClient.handleOrderPendingOpenFeign(orderRequest);
+        log.info("receive from inventory-service, orderId {}", orderRequest.getOrderId());
         var orderRes = orderMapper.mapToOrder(order, Order.builder()
                 .orderDetail(objectMapper.writeValueAsString(orderResponse))
                 .status(orderResponse.getOrderStatus().name())
