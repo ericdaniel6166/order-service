@@ -11,8 +11,6 @@ app:
   kafka-default-topic: notificationTopic
   kafka-concurrency: 3
   kafka-group-id: notificationId
-  inventory-service-hostname: localhost
-  inventory-service-server-port: 8083
   inventory-service-context-path: api/inventory
   context-path: api/order
   api-gateway-hostname: localhost
@@ -81,6 +79,12 @@ spring:
     show-sql: true
 
 management:
+  tracing:
+    enabled: true
+    propagation:
+      type: b3
+    sampling:
+      probability: 1.0
   health:
     circuitbreakers:
       enabled: true
@@ -91,9 +95,6 @@ management:
   endpoint:
     health:
       show-details: always
-  tracing:
-    sampling:
-      probability: 1.0
   zipkin:
     tracing:
       endpoint: http://${app.zipkin-hostname}:${app.zipkin-server-port}/${app.zipkin-context-path}
