@@ -1,10 +1,12 @@
 package com.example.orderservice.service.impl;
 
-import com.example.orderservice.dto.OrderRequest;
+import com.example.orderservice.dto.OrderPendingRequest;
+import com.example.orderservice.dto.OrderProcessingRequest;
 import com.example.orderservice.dto.OrderStatusResponse;
 import com.example.orderservice.dto.PlaceOrderRequest;
 import com.example.orderservice.enums.OrderStatus;
 import com.example.orderservice.integration.client.InventoryClient;
+import com.example.orderservice.integration.client.PaymentClient;
 import com.example.orderservice.integration.kafka.config.KafkaProducerProperties;
 import com.example.orderservice.integration.kafka.event.OrderEvent;
 import com.example.orderservice.integration.kafka.event.OrderPendingEvent;
@@ -48,6 +50,8 @@ public class OrderServiceImpl implements OrderService {
     final KafkaTemplate<String, Object> kafkaTemplate;
 
     final InventoryClient inventoryClient;
+
+    final PaymentClient paymentClient;
 
     final KafkaProducerProperties kafkaProducerProperties;
 
@@ -133,12 +137,12 @@ public class OrderServiceImpl implements OrderService {
                 .build();
     }
 
-    private OrderRequest buildOrderPendingRequest(PlaceOrderRequest request, Order order) {
-        return OrderRequest.builder()
+    private OrderPendingRequest buildOrderPendingRequest(PlaceOrderRequest request, Order order) {
+        return OrderPendingRequest.builder()
                 .accountNumber(String.valueOf(RandomUtils.nextLong(100000000000L, 999999999999L))) //improvement later
                 .orderId(order.getId())
                 .itemList(request.getItemList().stream()
-                        .map(item -> modelMapper.map(item, OrderRequest.Item.class))
+                        .map(item -> modelMapper.map(item, OrderPendingRequest.Item.class))
                         .toList())
                 .build();
     }
@@ -147,25 +151,52 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderStatusResponse placeOpenFeign(PlaceOrderRequest request) throws JsonProcessingException {
         var order = saveOrderPending(request);
-        var orderRequest = buildOrderPendingRequest(request, order);
+        var orderPendingRequest = buildOrderPendingRequest(request, order);
         var orderStatusHistory = OrderStatusHistory.builder()
                 .orderId(order.getId())
                 .status(order.getStatus())
-                .orderDetail(objectMapper.writeValueAsString(orderRequest))
+                .orderDetail(objectMapper.writeValueAsString(orderPendingRequest))
                 .build();
         orderStatusHistoryRepository.saveAndFlush(orderStatusHistory);
 
-        var orderResponse = inventoryClient.handleOrderPendingOpenFeign(orderRequest);
-        var orderRes = orderMapper.mapToOrder(order, Order.builder()
-                .orderDetail(objectMapper.writeValueAsString(orderResponse))
-                .status(orderResponse.getOrderStatus().name())
+        log.info("call to inventory-service, orderId {}", orderPendingRequest.getOrderId());
+        var orderPendingResponse = inventoryClient.handleOrderPendingOpenFeign(orderPendingRequest);
+        log.info("receive from inventory-service, orderId {}", orderPendingRequest.getOrderId());
+        var orderPendingRes = orderMapper.mapToOrder(order, Order.builder()
+                .orderDetail(objectMapper.writeValueAsString(orderPendingResponse))
+                .status(orderPendingResponse.getOrderStatus().name())
                 .build());
-        orderRepository.saveAndFlush(orderRes);
-        orderStatusHistoryRepository.saveAndFlush(orderMapper.mapToOrderStatusHistory(orderRes, new OrderStatusHistory()));
+        orderRepository.saveAndFlush(orderPendingRes);
+        orderStatusHistoryRepository.saveAndFlush(orderMapper.mapToOrderStatusHistory(orderPendingRes, new OrderStatusHistory()));
+
+        OrderStatus orderStatus = OrderStatus.fromString(orderPendingRes.getStatus());
+        if (OrderStatus.PROCESSING == orderStatus) {
+            var orderProcessingRequest = OrderProcessingRequest.builder()
+                    .accountNumber(orderPendingResponse.getAccountNumber())
+                    .orderId(orderPendingResponse.getOrderId())
+                    .itemList(orderPendingResponse.getItemList().stream()
+                            .map(item -> modelMapper.map(item, OrderProcessingRequest.Item.class))
+                            .toList())
+                    .build();
+            log.info("call to payment-service, orderId {}", orderProcessingRequest.getOrderId());
+            var orderProcessingResponse = paymentClient.handleOrderProcessingOpenFeign(orderProcessingRequest);
+            log.info("receive from payment-service, orderId {}", orderProcessingRequest.getOrderId());
+            var orderProcessingRes = orderMapper.mapToOrder(orderPendingRes, Order.builder()
+                    .orderDetail(objectMapper.writeValueAsString(orderProcessingResponse))
+                    .status(orderProcessingResponse.getOrderStatus().name())
+                    .build());
+            orderRepository.saveAndFlush(orderProcessingRes);
+            orderStatusHistoryRepository.saveAndFlush(orderMapper.mapToOrderStatusHistory(orderProcessingRes, new OrderStatusHistory()));
+            return OrderStatusResponse.builder()
+                    .orderId(orderProcessingRes.getId())
+                    .orderStatus(orderProcessingRes.getStatus())
+                    .orderDetail(getOrderDetail(orderProcessingRes.getOrderDetail()))
+                    .build();
+        }
         return OrderStatusResponse.builder()
-                .orderId(orderRes.getId())
-                .orderStatus(orderRes.getStatus())
-                .orderDetail(getOrderDetail(orderRes.getOrderDetail()))
+                .orderId(orderPendingRes.getId())
+                .orderStatus(orderPendingRes.getStatus())
+                .orderDetail(getOrderDetail(orderPendingRes.getOrderDetail()))
                 .build();
     }
 

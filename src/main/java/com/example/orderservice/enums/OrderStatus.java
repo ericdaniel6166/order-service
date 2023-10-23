@@ -16,6 +16,7 @@ public enum OrderStatus {
     CANCELLED,  // Order has been cancelled by the customer or admin.
     ITEM_NOT_AVAILABLE,
     PAYMENT_FAIL,
+    ORDER_SERVICE_UNAVAILABLE,
     ERROR,
     ;
 
@@ -24,7 +25,7 @@ public enum OrderStatus {
         try {
             return valueOf(value.toUpperCase(Locale.US));
         } catch (Exception e) {
-            throw new IllegalArgumentException(String.format("Invalid value '%s' for OrderStatus (case insensitive)", value), e);
+            throw new IllegalArgumentException(String.format("Invalid value '%s' for %s (case insensitive)", value, OrderStatus.class.getSimpleName()), e);
         }
     }
 

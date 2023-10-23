@@ -11,12 +11,15 @@ app:
   kafka-default-topic: notificationTopic
   kafka-concurrency: 3
   kafka-group-id: notificationId
-  inventory-service-hostname: localhost
-  inventory-service-server-port: 8083
   inventory-service-context-path: api/inventory
+  payment-service-context-path: api/payment
   context-path: api/order
   api-gateway-hostname: localhost
+  swagger-api-gateway-hostname: localhost
   api-gateway-server-port: 8181
+  zipkin-hostname: localhost
+  zipkin-server-port: 9411
+  zipkin-context-path: api/v2/spans
 
 eureka:
   client:
@@ -77,6 +80,12 @@ spring:
     show-sql: true
 
 management:
+  tracing:
+    enabled: true
+    propagation:
+      type: b3
+    sampling:
+      probability: 1.0
   health:
     circuitbreakers:
       enabled: true
@@ -87,6 +96,9 @@ management:
   endpoint:
     health:
       show-details: always
+  zipkin:
+    tracing:
+      endpoint: http://${app.zipkin-hostname}:${app.zipkin-server-port}/${app.zipkin-context-path}
 
 server:
   port: ${app.server-port}
@@ -103,11 +115,13 @@ feign:
   client:
     enabled: true
     config:
-
       inventory-client:
-
         name: inventory-client
-        url: http://${app.inventory-service-hostname}:${app.inventory-service-server-port}/${app.inventory-service-context-path}
+        url: http://${app.api-gateway-hostname}:${app.api-gateway-server-port}/${app.inventory-service-context-path}
+      payment-client:
+        name: payment-client
+        url: http://${app.api-gateway-hostname}:${app.api-gateway-server-port}/${app.payment-service-context-path}
+
 
 springdoc:
   swagger-ui:
@@ -117,4 +131,26 @@ springdoc:
 
 swagger:
   server:
-    url: http://${app.api-gateway-hostname}:${app.api-gateway-server-port}/${app.context-path}
+    url: http://${app.swagger-api-gateway-hostname}:${app.api-gateway-server-port}/${app.context-path}
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      place-order:
+        registerHealthIndicator: true
+        event-consumer-buffer-size: 10
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+  timelimiter:
+    instances:
+      place-order:
+        timeout-duration: 3s
+  retry:
+    instances:
+      place-order:
+        max-attempts: 3
+        wait-duration: 5s
