@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class OrderResponse {
+public class OrderPendingResponse {
 
     Long orderId;
     String accountNumber;

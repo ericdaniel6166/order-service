@@ -12,6 +12,7 @@ app:
   kafka-concurrency: 3
   kafka-group-id: notificationId
   inventory-service-context-path: api/inventory
+  payment-service-context-path: api/payment
   context-path: api/order
   api-gateway-hostname: localhost
   swagger-api-gateway-hostname: localhost
@@ -117,6 +118,10 @@ feign:
       inventory-client:
         name: inventory-client
         url: http://${app.api-gateway-hostname}:${app.api-gateway-server-port}/${app.inventory-service-context-path}
+      payment-client:
+        name: payment-client
+        url: http://${app.api-gateway-hostname}:${app.api-gateway-server-port}/${app.payment-service-context-path}
+
 
 springdoc:
   swagger-ui:
