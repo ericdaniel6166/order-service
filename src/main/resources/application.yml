@@ -20,6 +20,8 @@ app:
   zipkin-hostname: localhost
   zipkin-server-port: 9411
   zipkin-context-path: api/v2/spans
+  mqtt-hostname: localhost
+  mqtt-port: 1883
 
 eureka:
   client:
@@ -78,6 +80,14 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+  mqtt:
+    outbound:
+      enabled: true
+      username: username
+      password: password
+      server-uris:
+        - tcp://${app.mqtt-hostname}:${app.mqtt-port}
+
 
 management:
   tracing:

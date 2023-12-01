@@ -16,4 +16,5 @@ public interface OrderService {
 
     OrderStatusResponse getStatus(Long id) throws NotFoundException, JsonProcessingException;
 
+    OrderStatusResponse placeMqtt(PlaceOrderRequest request) throws Exception;
 }

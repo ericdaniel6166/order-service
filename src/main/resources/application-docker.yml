@@ -7,3 +7,4 @@ app:
   inventory-service-hostname: inventory-service
   api-gateway-hostname: api-gateway
   zipkin-hostname: zipkin
+  mqtt-hostname: activemq

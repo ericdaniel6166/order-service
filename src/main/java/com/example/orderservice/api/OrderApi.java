@@ -29,6 +29,11 @@ public class OrderApi {
 
     private final OrderService orderService;
 
+    @PostMapping("/place-mqtt")
+    public ResponseEntity<OrderStatusResponse> placeMqtt(@RequestBody PlaceOrderRequest request) throws Exception {
+        return ResponseEntity.ok(orderService.placeMqtt(request));
+    }
+
     @PostMapping("/place-kafka")
     public ResponseEntity<OrderStatusResponse> placeKafka(@RequestBody PlaceOrderRequest request) throws JsonProcessingException {
         return ResponseEntity.ok(orderService.placeKafka(request));
