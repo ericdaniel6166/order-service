@@ -1,6 +1,6 @@
 package com.example.orderservice.integration.kafka.config;
 
-import com.example.springbootmicroservicesframework.kafka.config.KafkaConsumerConfig;
+import com.example.springbootmicroservicesframework.integration.kafka.config.KafkaConsumerConfig;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
