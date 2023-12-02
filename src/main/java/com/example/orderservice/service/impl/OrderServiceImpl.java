@@ -1,5 +1,6 @@
 package com.example.orderservice.service.impl;
 
+import com.example.orderservice.integration.mqtt.MqttGateway;
 import com.example.orderservice.dto.OrderPendingRequest;
 import com.example.orderservice.dto.OrderProcessingRequest;
 import com.example.orderservice.dto.OrderStatusResponse;
@@ -61,12 +62,21 @@ public class OrderServiceImpl implements OrderService {
 
     final OrderMapper orderMapper;
 
+    final MqttGateway mqttGateway;
+
+    @Transactional
+    @Override
+    public OrderStatusResponse placeMqtt(PlaceOrderRequest request) throws Exception {
+        mqttGateway.sendToMqtt("topic1", "topic1 message");
+        mqttGateway.sendToMqtt("topic2", "topic2 message");
+        return new OrderStatusResponse();
+    }
 
     @Override
     public OrderStatusResponse getStatus(Long id) throws NotFoundException, JsonProcessingException {
         var orderStatusDto = orderRepository.getStatus(id)
                 .orElseThrow(() -> new NotFoundException(String.format("order id %s", id)));
-        String orderDetailStr = orderStatusDto.getOrderDetail();
+        var orderDetailStr = orderStatusDto.getOrderDetail();
         var orderDetail = getOrderDetail(orderDetailStr);
 
         return OrderStatusResponse.builder()
