@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-@Table(name = "t_order")
+@Table(name = "T_ORDER")
 @Entity
 @Data
 @Builder
@@ -25,19 +25,19 @@ import java.math.BigDecimal;
 public class Order extends BaseEntity<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "ID")
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "USER_ID", nullable = false)
     private Long userId;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "STATUS", nullable = false)
     private String status;
 
-    @Column(name = "order_detail", columnDefinition = "TEXT")
+    @Column(name = "ORDER_DETAIL", columnDefinition = "TEXT")
     private String orderDetail;
 
-    @Column(name = "total_amount", precision = 19, scale = 4)
+    @Column(name = "TOTAL_AMOUNT", precision = 19, scale = 4)
     private BigDecimal totalAmount;
 
 }

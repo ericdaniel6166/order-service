@@ -14,7 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 
-@Table(name = "order_status_history")
+@Table(name = "ORDER_STATUS_HISTORY")
 @Entity
 @Data
 @Builder
@@ -24,15 +24,15 @@ import lombok.NoArgsConstructor;
 public class OrderStatusHistory extends BaseEntity<String> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "ID")
     private Long id;
 
-    @Column(name = "order_id")
+    @Column(name = "ORDER_ID")
     private Long orderId;
 
-    @Column(name = "status")
+    @Column(name = "STATUS")
     private String status;
 
-    @Column(name = "order_detail")
+    @Column(name = "ORDER_DETAIL")
     private String orderDetail;
 }

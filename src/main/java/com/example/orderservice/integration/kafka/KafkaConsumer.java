@@ -5,7 +5,7 @@ import com.example.orderservice.integration.kafka.event.ItemNotAvailableEvent;
 import com.example.orderservice.integration.kafka.event.OrderPaymentProcessingEvent;
 import com.example.orderservice.integration.kafka.event.OrderProcessingEvent;
 import com.example.orderservice.service.OrderService;
-import com.example.springbootmicroservicesframework.kafka.event.Event;
+import com.example.springbootmicroservicesframework.integration.kafka.event.Event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

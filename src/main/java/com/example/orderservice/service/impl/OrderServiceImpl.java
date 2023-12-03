@@ -18,7 +18,7 @@ import com.example.orderservice.repository.OrderRepository;
 import com.example.orderservice.repository.OrderStatusHistoryRepository;
 import com.example.orderservice.service.OrderService;
 import com.example.springbootmicroservicesframework.exception.NotFoundException;
-import com.example.springbootmicroservicesframework.kafka.event.Event;
+import com.example.springbootmicroservicesframework.integration.kafka.event.Event;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
