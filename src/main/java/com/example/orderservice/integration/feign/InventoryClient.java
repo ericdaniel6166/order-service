@@ -1,8 +1,8 @@
-package com.example.orderservice.integration.client;
+package com.example.orderservice.integration.feign;
 
 import com.example.orderservice.dto.OrderPendingRequest;
 import com.example.orderservice.dto.OrderPendingResponse;
-import com.example.springbootmicroservicesframework.config.feign.FeignClientConfig;
+import com.example.springbootmicroservicesframework.integration.feign.FeignClientConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
