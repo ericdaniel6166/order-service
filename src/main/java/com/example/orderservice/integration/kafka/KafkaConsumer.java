@@ -17,12 +17,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 public class KafkaConsumer {
 
-    final ModelMapper modelMapper;
-    final OrderService orderService;
+    ModelMapper modelMapper;
+    OrderService orderService;
 
     @KafkaListener(topics = "${spring.kafka.consumers.order-item-not-available.topic-name}",
             groupId = "${spring.kafka.consumers.order-item-not-available.group-id}",
