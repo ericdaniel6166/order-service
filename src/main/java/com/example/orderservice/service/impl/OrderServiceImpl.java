@@ -19,6 +19,7 @@ import com.example.orderservice.repository.OrderStatusHistoryRepository;
 import com.example.orderservice.service.OrderService;
 import com.example.springbootmicroservicesframework.exception.NotFoundException;
 import com.example.springbootmicroservicesframework.integration.kafka.event.Event;
+import com.example.springbootmicroservicesframework.utils.AppSecurityUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -38,31 +39,23 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderServiceImpl implements OrderService {
 
-    static final String ORDER_ID = "orderId";
-    static final String ORDER_STATUS = "orderStatus";
+    private static final String ORDER_ID = "orderId";
+    private static final String ORDER_STATUS = "orderStatus";
 
-    final OrderRepository orderRepository;
-
-    final OrderStatusHistoryRepository orderStatusHistoryRepository;
-
-    final KafkaTemplate<String, Object> kafkaTemplate;
-
-    final InventoryClient inventoryClient;
-
-    final PaymentClient paymentClient;
-
-    final KafkaProducerProperties kafkaProducerProperties;
-
-    final ModelMapper modelMapper;
-
-    final ObjectMapper objectMapper;
-
-    final OrderMapper orderMapper;
-
-    final MqttGateway mqttGateway;
+    OrderRepository orderRepository;
+    OrderStatusHistoryRepository orderStatusHistoryRepository;
+    KafkaTemplate<String, Object> kafkaTemplate;
+    InventoryClient inventoryClient;
+    PaymentClient paymentClient;
+    KafkaProducerProperties kafkaProducerProperties;
+    ModelMapper modelMapper;
+    ObjectMapper objectMapper;
+    OrderMapper orderMapper;
+    MqttGateway mqttGateway;
+    AppSecurityUtils appSecurityUtils;
 
     @Transactional
     @Override
@@ -170,7 +163,8 @@ public class OrderServiceImpl implements OrderService {
         orderStatusHistoryRepository.saveAndFlush(orderStatusHistory);
 
         log.info("call to inventory-service, orderId {}", orderPendingRequest.getOrderId());
-        var orderPendingResponse = inventoryClient.handleOrderPendingOpenFeign(orderPendingRequest);
+        var orderPendingResponse = inventoryClient.handleOrderPendingOpenFeign(
+                appSecurityUtils.getAuthorizationHeader(), orderPendingRequest);
         log.info("receive from inventory-service, orderId {}", orderPendingRequest.getOrderId());
         var orderPendingRes = orderMapper.mapToOrder(order, Order.builder()
                 .orderDetail(objectMapper.writeValueAsString(orderPendingResponse))
@@ -189,7 +183,8 @@ public class OrderServiceImpl implements OrderService {
                             .toList())
                     .build();
             log.info("call to payment-service, orderId {}", orderProcessingRequest.getOrderId());
-            var orderProcessingResponse = paymentClient.handleOrderProcessingOpenFeign(orderProcessingRequest);
+            var orderProcessingResponse = paymentClient.handleOrderProcessingOpenFeign(
+                    appSecurityUtils.getAuthorizationHeader(), orderProcessingRequest);
             log.info("receive from payment-service, orderId {}", orderProcessingRequest.getOrderId());
             var orderProcessingRes = orderMapper.mapToOrder(orderPendingRes, Order.builder()
                     .orderDetail(objectMapper.writeValueAsString(orderProcessingResponse))

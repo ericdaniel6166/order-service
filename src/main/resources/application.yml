@@ -22,6 +22,8 @@ app:
   zipkin-context-path: api/v2/spans
   mqtt-hostname: localhost
   mqtt-port: 1883
+  swagger-info-title: Order Service
+  swagger-info-version: v1.0
 
 eureka:
   client:
@@ -142,6 +144,14 @@ springdoc:
 swagger:
   server:
     url: http://${app.swagger-api-gateway-hostname}:${app.api-gateway-server-port}/${app.context-path}
+  info:
+    title: ${app.swagger-info-title}
+    version: ${app.swagger-info-version}
+    description: Documentation ${app.swagger-info-title} ${app.swagger-info-version}
+  security-scheme:
+    name: bearerAuth
+    bearer-format: JWT
+    scheme: bearer
 
 resilience4j:
   circuitbreaker:

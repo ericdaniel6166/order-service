@@ -10,12 +10,12 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 
 @Configuration
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class KafkaConsumerGroupIdConfig {
 
-    final KafkaConsumerConfig kafkaConsumerConfig;
+    KafkaConsumerConfig kafkaConsumerConfig;
 
-    final KafkaConsumerProperties kafkaConsumerProperties;
+    KafkaConsumerProperties kafkaConsumerProperties;
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, Object> orderItemNotAvailableKafkaListenerContainerFactory() {
