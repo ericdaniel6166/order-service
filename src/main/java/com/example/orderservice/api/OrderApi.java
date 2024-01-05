@@ -9,6 +9,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,17 +31,19 @@ public class OrderApi {
 
     private final OrderService orderService;
 
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("/place-mqtt")
     public ResponseEntity<OrderStatusResponse> placeMqtt(@RequestBody PlaceOrderRequest request) throws Exception {
         return ResponseEntity.ok(orderService.placeMqtt(request));
     }
 
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("/place-kafka")
     public ResponseEntity<OrderStatusResponse> placeKafka(@RequestBody PlaceOrderRequest request) throws JsonProcessingException {
         return ResponseEntity.ok(orderService.placeKafka(request));
     }
 
-
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     @CircuitBreaker(name = "place-order", fallbackMethod = "placeOpenFeignFallbackMethod")
     @TimeLimiter(name = "place-order")
     @Retry(name = "place-order")
@@ -48,6 +52,7 @@ public class OrderApi {
         return CompletableFuture.completedFuture(ResponseEntity.ok(orderService.placeOpenFeign(request)));
     }
 
+    @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/status/{id}")
     public ResponseEntity<OrderStatusResponse> getStatus(@PathVariable Long id) throws NotFoundException, JsonProcessingException {
         return ResponseEntity.ok(orderService.getStatus(id));
