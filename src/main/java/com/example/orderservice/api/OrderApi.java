@@ -4,7 +4,7 @@ import com.example.orderservice.dto.OrderStatusResponse;
 import com.example.orderservice.dto.PlaceOrderRequest;
 import com.example.orderservice.enums.OrderStatus;
 import com.example.orderservice.service.OrderService;
-import com.example.springbootmicroservicesframework.exception.NotFoundException;
+import com.example.springbootmicroservicesframework.exception.AppNotFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -54,7 +54,7 @@ public class OrderApi {
 
     @Operation(security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/status/{id}")
-    public ResponseEntity<OrderStatusResponse> getStatus(@PathVariable Long id) throws NotFoundException, JsonProcessingException {
+    public ResponseEntity<OrderStatusResponse> getStatus(@PathVariable Long id) throws AppNotFoundException, JsonProcessingException {
         return ResponseEntity.ok(orderService.getStatus(id));
     }
 

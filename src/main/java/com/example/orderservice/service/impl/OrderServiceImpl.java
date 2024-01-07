@@ -17,7 +17,7 @@ import com.example.orderservice.model.OrderStatusHistory;
 import com.example.orderservice.repository.OrderRepository;
 import com.example.orderservice.repository.OrderStatusHistoryRepository;
 import com.example.orderservice.service.OrderService;
-import com.example.springbootmicroservicesframework.exception.NotFoundException;
+import com.example.springbootmicroservicesframework.exception.AppNotFoundException;
 import com.example.springbootmicroservicesframework.integration.kafka.event.Event;
 import com.example.springbootmicroservicesframework.utils.AppSecurityUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -66,9 +66,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderStatusResponse getStatus(Long id) throws NotFoundException, JsonProcessingException {
+    public OrderStatusResponse getStatus(Long id) throws AppNotFoundException, JsonProcessingException {
         var orderStatusDto = orderRepository.getStatus(id)
-                .orElseThrow(() -> new NotFoundException(String.format("order id %s", id)));
+                .orElseThrow(() -> new AppNotFoundException(String.format("order id %s", id)));
         var orderDetailStr = orderStatusDto.getOrderDetail();
         var orderDetail = getOrderDetail(orderDetailStr);
 
