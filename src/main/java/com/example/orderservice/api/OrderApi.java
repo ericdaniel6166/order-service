@@ -44,9 +44,9 @@ public class OrderApi {
     }
 
     @Operation(security = @SecurityRequirement(name = "bearerAuth"))
-    @CircuitBreaker(name = "place-order", fallbackMethod = "placeOpenFeignFallbackMethod")
-    @TimeLimiter(name = "place-order")
-    @Retry(name = "place-order")
+//    @CircuitBreaker(name = "place-order", fallbackMethod = "placeOpenFeignFallbackMethod")
+//    @TimeLimiter(name = "place-order")
+//    @Retry(name = "place-order")
     @PostMapping("/place-open-feign")
     public CompletionStage<ResponseEntity<OrderStatusResponse>> placeOpenFeign(@RequestBody PlaceOrderRequest request) throws JsonProcessingException {
         return CompletableFuture.completedFuture(ResponseEntity.ok(orderService.placeOpenFeign(request)));

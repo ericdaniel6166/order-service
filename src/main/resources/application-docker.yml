@@ -8,3 +8,4 @@ app:
   api-gateway-hostname: api-gateway
   zipkin-hostname: zipkin
   mqtt-hostname: activemq
+  keycloak-host: keycloak

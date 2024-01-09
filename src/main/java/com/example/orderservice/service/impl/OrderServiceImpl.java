@@ -1,6 +1,5 @@
 package com.example.orderservice.service.impl;
 
-import com.example.orderservice.integration.mqtt.MqttGateway;
 import com.example.orderservice.dto.OrderPendingRequest;
 import com.example.orderservice.dto.OrderProcessingRequest;
 import com.example.orderservice.dto.OrderStatusResponse;
@@ -11,6 +10,7 @@ import com.example.orderservice.integration.feign.PaymentClient;
 import com.example.orderservice.integration.kafka.config.KafkaProducerProperties;
 import com.example.orderservice.integration.kafka.event.OrderEvent;
 import com.example.orderservice.integration.kafka.event.OrderPendingEvent;
+import com.example.orderservice.integration.mqtt.MqttGateway;
 import com.example.orderservice.mapper.OrderMapper;
 import com.example.orderservice.model.Order;
 import com.example.orderservice.model.OrderStatusHistory;
@@ -92,7 +92,7 @@ public class OrderServiceImpl implements OrderService {
     public void handleOrderEvent(OrderEvent orderEvent, OrderStatus orderStatus) throws JsonProcessingException {
         var orderDetail = objectMapper.writeValueAsString(orderEvent);
         orderRepository.update(orderEvent.getOrderId(), orderStatus.name(),
-                orderDetail, LocalDateTime.now());
+                orderDetail, LocalDateTime.now(), AppSecurityUtils.getCurrentAuditor());
         orderStatusHistoryRepository.saveAndFlush(OrderStatusHistory.builder()
                 .orderId(orderEvent.getOrderId())
                 .status(orderStatus.name())
