@@ -16,16 +16,18 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             update Order o 
             set o.status = :status, 
             o.orderDetail = :orderDetail,
-            o.lastModifiedDate = :now 
+            o.lastModifiedDate = :now,
+            o.lastModifiedBy = :currentAuditor
             where o.id = :id
             """)
-    void update(Long id, String status, String orderDetail, LocalDateTime now);
+    void update(Long id, String status, String orderDetail, LocalDateTime now, String currentAuditor);
 
     @Modifying
     @Query("""
             update Order o 
             set o.status = :status,
-            o.lastModifiedDate = :now 
+            o.lastModifiedDate = :now,
+            o.lastModifiedBy = :currentAuditor
             where o.id = :id
             """)
     void update(Long id, String status, LocalDateTime now);

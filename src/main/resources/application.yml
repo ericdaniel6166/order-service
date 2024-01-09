@@ -24,6 +24,8 @@ app:
   mqtt-port: 1883
   swagger-info-title: Order Service
   swagger-info-version: v1.0
+  keycloak-host: localhost
+  keycloak-port: 8090
 
 eureka:
   client:
@@ -33,9 +35,24 @@ eureka:
   instance:
     lease-renewal-interval-in-seconds: 5
 
+security:
+  enabled: true
+  skip-urls:
+    - /guest/**
+    - /actuator/**
+    - /swagger-ui/**
+    - /v3/api-docs/**
+    - /api-docs/**
+    - /error/**
+
 spring:
   application:
     name: ${app.application-name}
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://${app.keycloak-host}:${app.keycloak-port}/realms/spring-boot-microservices-realm
   flyway:
     baseline-on-migrate: true
     baseline-version: 0.0

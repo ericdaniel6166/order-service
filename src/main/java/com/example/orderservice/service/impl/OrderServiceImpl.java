@@ -1,6 +1,5 @@
 package com.example.orderservice.service.impl;
 
-import com.example.orderservice.integration.mqtt.MqttGateway;
 import com.example.orderservice.dto.OrderPendingRequest;
 import com.example.orderservice.dto.OrderProcessingRequest;
 import com.example.orderservice.dto.OrderStatusResponse;
@@ -11,13 +10,14 @@ import com.example.orderservice.integration.feign.PaymentClient;
 import com.example.orderservice.integration.kafka.config.KafkaProducerProperties;
 import com.example.orderservice.integration.kafka.event.OrderEvent;
 import com.example.orderservice.integration.kafka.event.OrderPendingEvent;
+import com.example.orderservice.integration.mqtt.MqttGateway;
 import com.example.orderservice.mapper.OrderMapper;
 import com.example.orderservice.model.Order;
 import com.example.orderservice.model.OrderStatusHistory;
 import com.example.orderservice.repository.OrderRepository;
 import com.example.orderservice.repository.OrderStatusHistoryRepository;
 import com.example.orderservice.service.OrderService;
-import com.example.springbootmicroservicesframework.exception.NotFoundException;
+import com.example.springbootmicroservicesframework.exception.AppNotFoundException;
 import com.example.springbootmicroservicesframework.integration.kafka.event.Event;
 import com.example.springbootmicroservicesframework.utils.AppSecurityUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -66,9 +66,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderStatusResponse getStatus(Long id) throws NotFoundException, JsonProcessingException {
+    public OrderStatusResponse getStatus(Long id) throws AppNotFoundException, JsonProcessingException {
         var orderStatusDto = orderRepository.getStatus(id)
-                .orElseThrow(() -> new NotFoundException(String.format("order id %s", id)));
+                .orElseThrow(() -> new AppNotFoundException(String.format("order id %s", id)));
         var orderDetailStr = orderStatusDto.getOrderDetail();
         var orderDetail = getOrderDetail(orderDetailStr);
 
@@ -92,7 +92,7 @@ public class OrderServiceImpl implements OrderService {
     public void handleOrderEvent(OrderEvent orderEvent, OrderStatus orderStatus) throws JsonProcessingException {
         var orderDetail = objectMapper.writeValueAsString(orderEvent);
         orderRepository.update(orderEvent.getOrderId(), orderStatus.name(),
-                orderDetail, LocalDateTime.now());
+                orderDetail, LocalDateTime.now(), AppSecurityUtils.getCurrentAuditor());
         orderStatusHistoryRepository.saveAndFlush(OrderStatusHistory.builder()
                 .orderId(orderEvent.getOrderId())
                 .status(orderStatus.name())
