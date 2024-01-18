@@ -26,6 +26,9 @@ app:
   swagger-info-version: v1.0
   keycloak-host: localhost
   keycloak-port: 8090
+  redis-host: localhost
+  redis-port: 6379
+  redis-time-to-live: 600000 #10 minutes #ms
 
 eureka:
   client:
@@ -99,6 +102,16 @@ spring:
     hibernate:
       ddl-auto: none
     show-sql: true
+  redis:
+    enabled: true
+  cache:
+    redis:
+      time-to-live: ${app.redis-time-to-live}
+    type: redis
+  data:
+    redis:
+      host: ${app.redis-host}
+      port: ${app.redis-port}
   mqtt:
     outbound:
       enabled: true
