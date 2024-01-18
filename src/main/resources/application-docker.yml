@@ -9,3 +9,4 @@ app:
   zipkin-hostname: zipkin
   mqtt-hostname: activemq
   keycloak-host: keycloak
+  redis-host: redis
